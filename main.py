@@ -4,7 +4,7 @@ def deck_initialize():
     # Creates the deck of cards and shuffles them
     suits = ["Hearts","Clubs","Diamonds","Spades"]
     ranks = ["Ace","2","3","4","5","6","7","8","9","10","Jack","Queen","King"]
-    values = [1,2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
+    values = [11,2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
     deck = []
 
     for suit in suits:
@@ -23,8 +23,19 @@ def initialize_game(dealer,player,deck):
         deck.remove(card)
 
         card = random.choice(deck)
+        if card[1] == "Ace":
+            choice = input("Would you like your Ace to be worth 1? By default, it will be valued at 11. (y/n)")
+            if choice.lower == "y":
+                card[2] = 1
+
+
         player.append(card)
         deck.remove(card)
+
+
+
+    print("DEALER's SHOW CARD:")
+    print(f"{dealer[0][1]} of {dealer[0][0]}\n")
 
 def calculate_scores(dealer,player):
     dealer_score = 0
@@ -37,6 +48,12 @@ def calculate_scores(dealer,player):
 
     return dealer_score,player_score
 
+def display_player_cards(player):
+    print("YOUR CARDS:")
+    for i in player:
+        print(f"{i[0]} of {i[1]}")
+
+
 def main():
     dealer = []
     player = []
@@ -45,7 +62,8 @@ def main():
     deck = deck_initialize()
     initialize_game(dealer,player,deck)
     dealer_score, player_score = calculate_scores(dealer,player)
-    print(dealer_score,player_score)
+
+    display_player_cards(player)
 
 
 
