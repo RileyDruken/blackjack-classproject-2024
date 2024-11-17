@@ -4,7 +4,7 @@ def deck_initialize():
     # Creates the deck of cards and shuffles them
     suits = ["Hearts","Clubs","Diamonds","Spades"]
     ranks = ["Ace","2","3","4","5","6","7","8","9","10","Jack","Queen","King"]
-    values = [1,2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
+    values = [11,2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
     deck = []
 
     for suit in suits:
@@ -23,10 +23,20 @@ def initialize_game(dealer,player,deck):
         deck.remove(card)
 
         card = random.choice(deck)
+        if card[1] == "Ace":
+            display_player_cards(player)
+            choice = input("Would you like your Ace to be worth 1? By default, it will be valued at 11. (y/n)")
+            if choice.lower == "y":
+                card[2] = 1
+
         player.append(card)
         deck.remove(card)
 
+    print("DEALER's SHOW CARD:")
+    print(f"{dealer[0][1]} of {dealer[0][0]}\n")
+
 def calculate_scores(dealer,player):
+    #calculates scores
     dealer_score = 0
     player_score = 0
 
@@ -37,6 +47,35 @@ def calculate_scores(dealer,player):
 
     return dealer_score,player_score
 
+def display_player_cards(player):
+    # displays player cards
+    print("YOUR CARDS:")
+    for i in player:
+        print(f"{i[0]} of {i[1]}")
+    print()
+
+def display_dealer_cards(dealer):
+    # displays dealer cards
+    print("DEALER CARDS:")
+    for i in dealer:
+        print(f"{i[0]} of {i[1]}")
+    print()
+
+def win_check(dealer_score, player_score):
+    if player_score == 21:
+        print("Congrats, You Win.")
+    elif player_score > 21:
+        print("Player bust, you lose")
+    elif player_score > dealer_score:
+        print("Congrats, You Win.")
+    elif player_score == dealer_score:
+        print("Draw, it is a tie")
+    else:
+        print("Sorry, you lose.")
+
+
+
+
 def main():
     dealer = []
     player = []
@@ -44,17 +83,44 @@ def main():
     print("BlACKJACK!\nBlackjack payout is 3:2\n")
     deck = deck_initialize()
     initialize_game(dealer,player,deck)
-    dealer_score, player_score = calculate_scores(dealer,player)
-    print(dealer_score,player_score)
+    display_player_cards(player)
 
+    while True:
+        dealer_score, player_score = calculate_scores(dealer, player)
 
+        choice = input("Hit or stand? (hit/stand): ").lower()
+        if choice == "hit":
+            card = random.choice(deck)
 
+            if card[1] == "Ace":
+                choice = input("Would you like your Ace to be worth 1? By default, it will be valued at 11. (y/n)")
+                if choice.lower == "y":
+                    card[2] = 1
 
+            player.append(card)
+            deck.remove(card)
+            display_player_cards(player)
+        elif choice == "stand":
+            print()
+            display_dealer_cards(dealer)
 
+            print(f"YOUR POINTS:\t {player_score}")
+            print(f"DEALER'S POINTS: {dealer_score}")
+            print()
+            win_check(dealer_score, player_score)
 
+            player_choice = input("Play again? (y/n): ").lower()
+            if player_choice != "y":
+                break
+            dealer = []
+            player = []
+            deck = deck_initialize()
+            initialize_game(dealer, player, deck)
+            display_player_cards(player)
+        else:
+            print("invalid choice please try again!")
 
-
-
+    print("\nCome back soon!\nBye!")
 
 
 if __name__ == '__main__':
