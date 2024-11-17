@@ -83,7 +83,29 @@ def main():
     print("BlACKJACK!\nBlackjack payout is 3:2\n")
     deck = deck_initialize()
     initialize_game(dealer,player,deck)
+    display_player_cards(player)
 
+    while True:
+        dealer_score, player_score = calculate_scores(dealer, player)
+
+        choice = input("Hit or stand? (hit/stand): ").lower()
+        if choice == "hit":
+            card = random.choice(deck)
+
+            if card[1] == "Ace":
+                choice = input("Would you like your Ace to be worth 1? By default, it will be valued at 11. (y/n)")
+                if choice.lower == "y":
+                    card[2] = 1
+
+            player.append(card)
+            deck.remove(card)
+            display_player_cards(player)
+        elif choice == "stand":
+           pass
+        else:
+            print("invalid choice please try again!")
+
+    print("\nCome back soon!\nBye!")
 
 
 if __name__ == '__main__':
