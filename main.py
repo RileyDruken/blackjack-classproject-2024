@@ -101,7 +101,22 @@ def main():
             deck.remove(card)
             display_player_cards(player)
         elif choice == "stand":
-           pass
+            print()
+            display_dealer_cards(dealer)
+
+            print(f"YOUR POINTS:\t {player_score}")
+            print(f"DEALER'S POINTS: {dealer_score}")
+            print()
+            win_check(dealer_score, player_score)
+
+            player_choice = input("Play again? (y/n): ").lower()
+            if player_choice != "y":
+                break
+            dealer = []
+            player = []
+            deck = deck_initialize()
+            initialize_game(dealer, player, deck)
+            display_player_cards(player)
         else:
             print("invalid choice please try again!")
 
