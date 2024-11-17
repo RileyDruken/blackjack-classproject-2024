@@ -4,8 +4,7 @@ def deck_initialize():
     # Creates the deck of cards and shuffles them
     suits = ["Hearts","Clubs","Diamonds","Spades"]
     ranks = ["Ace","2","3","4","5","6","7","8","9","10","Jack","Queen","King"]
-    values = [[1,11],2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
-
+    values = [1,2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
     deck = []
 
     for suit in suits:
@@ -27,15 +26,26 @@ def initialize_game(dealer,player,deck):
         player.append(card)
         deck.remove(card)
 
+def calculate_scores(dealer,player):
+    dealer_score = 0
+    player_score = 0
 
+    for i in dealer:
+        dealer_score += i[2]
+    for i in player:
+        player_score += i[2]
+
+    return dealer_score,player_score
 
 def main():
-    print("BlACKJACK!\nBlackjack payout is 3:2\n")
-    deck = deck_initialize()
-    print(deck)
-
     dealer = []
     player = []
+
+    print("BlACKJACK!\nBlackjack payout is 3:2\n")
+    deck = deck_initialize()
+    initialize_game(dealer,player,deck)
+    dealer_score, player_score = calculate_scores(dealer,player)
+    print(dealer_score,player_score)
 
 
 
