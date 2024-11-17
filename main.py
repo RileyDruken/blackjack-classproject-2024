@@ -24,6 +24,7 @@ def initialize_game(dealer,player,deck):
 
         card = random.choice(deck)
         if card[1] == "Ace":
+            display_player_cards(player)
             choice = input("Would you like your Ace to be worth 1? By default, it will be valued at 11. (y/n)")
             if choice.lower == "y":
                 card[2] = 1
@@ -51,20 +52,29 @@ def display_player_cards(player):
     print("YOUR CARDS:")
     for i in player:
         print(f"{i[0]} of {i[1]}")
+    print()
 
 def display_dealer_cards(dealer):
     # displays dealer cards
     print("DEALER CARDS:")
     for i in dealer:
         print(f"{i[0]} of {i[1]}")
+    print()
 
 def win_check(dealer_score, player_score):
-    if player_score == 21 or player_score > dealer_score:
+    if player_score == 21:
         print("Congrats, You Win.")
-    elif (player_score < 21 and dealer_score < 21) and player_score == dealer_score:
+    elif player_score > 21:
+        print("Player bust, you lose")
+    elif player_score > dealer_score:
+        print("Congrats, You Win.")
+    elif player_score == dealer_score:
         print("Draw, it is a tie")
     else:
-        print("Sorry. You lose.")
+        print("Sorry, you lose.")
+
+
+
 
 def main():
     dealer = []
@@ -73,19 +83,6 @@ def main():
     print("BlACKJACK!\nBlackjack payout is 3:2\n")
     deck = deck_initialize()
     initialize_game(dealer,player,deck)
-    dealer_score, player_score = calculate_scores(dealer,player)
-
-    display_player_cards(player)
-
-
-
-
-
-
-
-
-
-
 
 
 
