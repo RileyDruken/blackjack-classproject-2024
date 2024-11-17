@@ -28,16 +28,14 @@ def initialize_game(dealer,player,deck):
             if choice.lower == "y":
                 card[2] = 1
 
-
         player.append(card)
         deck.remove(card)
-
-
 
     print("DEALER's SHOW CARD:")
     print(f"{dealer[0][1]} of {dealer[0][0]}\n")
 
 def calculate_scores(dealer,player):
+    #calculates scores
     dealer_score = 0
     player_score = 0
 
@@ -49,10 +47,24 @@ def calculate_scores(dealer,player):
     return dealer_score,player_score
 
 def display_player_cards(player):
+    # displays player cards
     print("YOUR CARDS:")
     for i in player:
         print(f"{i[0]} of {i[1]}")
 
+def display_dealer_cards(dealer):
+    # displays dealer cards
+    print("DEALER CARDS:")
+    for i in dealer:
+        print(f"{i[0]} of {i[1]}")
+
+def win_check(dealer_score, player_score):
+    if player_score == 21 or player_score > dealer_score:
+        print("Congrats, You Win.")
+    elif (player_score < 21 and dealer_score < 21) and player_score == dealer_score:
+        print("Draw, it is a tie")
+    else:
+        print("Sorry. You lose.")
 
 def main():
     dealer = []
@@ -64,6 +76,8 @@ def main():
     dealer_score, player_score = calculate_scores(dealer,player)
 
     display_player_cards(player)
+
+
 
 
 
