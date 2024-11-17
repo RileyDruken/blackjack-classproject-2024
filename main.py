@@ -23,11 +23,7 @@ def initialize_game(dealer,player,deck):
         deck.remove(card)
 
         card = random.choice(deck)
-        if card[1] == "Ace":
-            display_player_cards(player)
-            choice = input("Would you like your Ace to be worth 1? By default, it will be valued at 11. (y/n)")
-            if choice.lower == "y":
-                card[2] = 1
+        ace_check(card)
 
         player.append(card)
         deck.remove(card)
@@ -73,14 +69,24 @@ def win_check(dealer_score, player_score):
     else:
         print("Sorry, you lose.")
 
-
-
+def ace_check(card):
+    if card[1] == "Ace":
+        while True:
+            choice = input("Would you like your Ace to be worth 1? By default, it will be valued at 11. (y/n)")
+            if choice.lower() == "y":
+                card[2] = 1
+                break
+            elif choice.lower() == "n":
+                break
+            else:
+                print("try again")
 
 def main():
     dealer = []
     player = []
 
     print("BlACKJACK!\nBlackjack payout is 3:2\n")
+
     deck = deck_initialize()
     initialize_game(dealer,player,deck)
     display_player_cards(player)
@@ -89,17 +95,14 @@ def main():
         dealer_score, player_score = calculate_scores(dealer, player)
 
         choice = input("Hit or stand? (hit/stand): ").lower()
+
         if choice == "hit":
             card = random.choice(deck)
-
-            if card[1] == "Ace":
-                choice = input("Would you like your Ace to be worth 1? By default, it will be valued at 11. (y/n)")
-                if choice.lower == "y":
-                    card[2] = 1
-
+            ace_check(card)
             player.append(card)
             deck.remove(card)
             display_player_cards(player)
+
         elif choice == "stand":
             print()
             display_dealer_cards(dealer)
@@ -107,11 +110,16 @@ def main():
             print(f"YOUR POINTS:\t {player_score}")
             print(f"DEALER'S POINTS: {dealer_score}")
             print()
+
+            #check if winner
             win_check(dealer_score, player_score)
 
+            #sees if the player wants to end the game
             player_choice = input("Play again? (y/n): ").lower()
             if player_choice != "y":
                 break
+
+            #resets values for new game
             dealer = []
             player = []
             deck = deck_initialize()
