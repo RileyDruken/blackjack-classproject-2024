@@ -1,4 +1,5 @@
 import random
+import db
 
 def deck_initialize():
     # Creates the deck of cards and shuffles them
@@ -15,17 +16,24 @@ def deck_initialize():
     return deck
 
 
-def initialize_game(dealer, player, deck):
+def initialize_game(dealer, player, deck, money):
     # Initializes the game by dealing the cards to the player and dealer
     for i in range(2):
         card = deck.pop()
+        ace_check(card, 0, 0, True)
         dealer.append(card)
 
         card = deck.pop()
+        ace_check(card,0,0,False)
         player.append(card)
 
-    print("DEALER's SHOW CARD:")
+    deck = deck_initialize()
+    money = float(db.read_money())
+
+
+    print("\nDEALER's SHOW CARD:")
     print(f"{dealer[0][1]} of {dealer[0][0]}\n")
+    return money
 
 def calculate_scores(dealer,player):
     #calculates scores
@@ -53,23 +61,32 @@ def display_dealer_cards(dealer):
         print(f"{i[0]} of {i[1]}")
     print()
 
-def win_check(dealer_score, player_score):
+def win_check(dealer_score, player_score,bet_amount,money):
     # checks if the winner
     print(f"YOUR POINTS:\t {player_score}")
     print(f"DEALER'S POINTS: {dealer_score}")
 
     if player_score == 21:
-        print("Congrats, You Win.\n")
+        print("Congrats, You Win.")
+        money += bet_amount * 1.5
     elif player_score > 21:
-        print("Player bust, you lose.\n")
+        print("Player bust, you lose.")
+        money -= bet_amount
     elif player_score > dealer_score:
-        print("Congrats, You Win.\n")
+        print("Congrats, You Win.")
+        money += bet_amount * 1.5
     elif player_score == dealer_score:
-        print("Draw, it is a tie.\n")
+        print("Draw, it is a tie.")
     elif dealer_score > 21:
-        print("Dealer bust, you win.\n")
+        print("Dealer bust, you win.")
+        money += bet_amount * 1.5
     else:
-        print("Sorry, you lose.\n")
+        print("Sorry, you lose.")
+        money -= bet_amount
+
+    money = round(money, 2)
+    print("Money: ", money)
+    db.write_money(str(money))
 
 def ace_check(card, player_score, dealer_score, is_dealer=False):
     #checks if the card the player or dealer has is an ace
@@ -109,16 +126,32 @@ def main():
     dealer = []
     player = []
 
+    money = float(db.read_money())
     print("BlACKJACK!\nBlackjack payout is 3:2\n")
 
     deck = deck_initialize()
-    initialize_game(dealer,player,deck)
+    print(f"Money: {money}")
+
+    while True:
+        try:
+            bet_amount = float(input("Bet amount: "))
+            if bet_amount >= 5 and bet_amount <= 1000 and bet_amount <= money:
+                break
+            else:
+                print("Invalid bet amount")
+        except ValueError:
+            print("Invalid input for bet amount try again.")
+    initialize_game(dealer, player, deck, money)
+
+
     display_player_cards(player)
 
     while True:
+
         dealer_score, player_score = calculate_scores(dealer, player)
+
         if player_score > 21:
-            win_check(dealer_score,player_score)
+            win_check(dealer_score,player_score,bet_amount,money)
             while True:
                 player_choice = input("Play again? (y/n): ").lower()
                 if player_choice == "y" or player_choice == "n":
@@ -130,8 +163,7 @@ def main():
             # resets values for new game
             dealer = []
             player = []
-            deck = deck_initialize()
-            initialize_game(dealer, player, deck)
+            initialize_game(dealer, player, deck,money)
             display_player_cards(player)
 
         choice = input("Hit or stand? (hit/stand): ").lower()
@@ -150,7 +182,7 @@ def main():
             display_dealer_cards(dealer)
 
             #check if winner
-            win_check(dealer_score, player_score)
+            win_check(dealer_score, player_score,bet_amount,money)
 
             #sees if the player wants to end the game
             while True:
@@ -161,14 +193,28 @@ def main():
             if player_choice != "y":
                 break
             print()
-            #resets values for new game
+
+            money = float(db.read_money())
+            print("Money:", money)
+            while True:
+                try:
+                    bet_amount = float(input("Bet amount: "))
+                    if bet_amount >= 5 and bet_amount <= 1000 and bet_amount <= money:
+                        break
+                    else:
+                        print("Invalid bet amount")
+                except ValueError:
+                    print("Invalid input for bet amount try again.")
+            # resets values for new game
             dealer = []
             player = []
-            deck = deck_initialize()
-            initialize_game(dealer, player, deck)
+            initialize_game(dealer, player, deck, money)
+
             display_player_cards(player)
+
         else:
             print("invalid choice please try again!")
+
 
     print("\nCome back soon!\nBye!")
 
