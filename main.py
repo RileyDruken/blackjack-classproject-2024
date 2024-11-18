@@ -16,17 +16,24 @@ def deck_initialize():
     return deck
 
 
-def initialize_game(dealer, player, deck):
+def initialize_game(dealer, player, deck, money):
     # Initializes the game by dealing the cards to the player and dealer
     for i in range(2):
         card = deck.pop()
+        ace_check(card, 0, 0, True)
         dealer.append(card)
 
         card = deck.pop()
+        ace_check(card,0,0,False)
         player.append(card)
 
-    print("DEALER's SHOW CARD:")
+    deck = deck_initialize()
+    money = float(db.read_money())
+
+
+    print("\nDEALER's SHOW CARD:")
     print(f"{dealer[0][1]} of {dealer[0][0]}\n")
+    return money
 
 def calculate_scores(dealer,player):
     #calculates scores
@@ -60,29 +67,25 @@ def win_check(dealer_score, player_score,bet_amount,money):
     print(f"DEALER'S POINTS: {dealer_score}")
 
     if player_score == 21:
-        print("Congrats, You Win.\n")
+        print("Congrats, You Win.")
         money += bet_amount * 1.5
-        print("Money: ", money)
     elif player_score > 21:
-        print("Player bust, you lose.\n")
+        print("Player bust, you lose.")
         money -= bet_amount
-        print("Money: ", money)
     elif player_score > dealer_score:
-        print("Congrats, You Win.\n")
+        print("Congrats, You Win.")
         money += bet_amount * 1.5
-        print("Money: ", money)
     elif player_score == dealer_score:
-        print("Draw, it is a tie.\n")
-        print("Money: ", money)
+        print("Draw, it is a tie.")
     elif dealer_score > 21:
-        print("Dealer bust, you win.\n")
+        print("Dealer bust, you win.")
         money += bet_amount * 1.5
-        print("Money: ", money)
     else:
-        print("Sorry, you lose.\n")
+        print("Sorry, you lose.")
         money -= bet_amount
-        print("Money: ", money)
 
+    money = round(money, 2)
+    print("Money: ", money)
     db.write_money(str(money))
 
 def ace_check(card, player_score, dealer_score, is_dealer=False):
@@ -124,19 +127,23 @@ def main():
     player = []
 
     money = float(db.read_money())
-
-
     print("BlACKJACK!\nBlackjack payout is 3:2\n")
 
     deck = deck_initialize()
     print(f"Money: {money}")
+
     while True:
         try:
             bet_amount = float(input("Bet amount: "))
-            break
+            if bet_amount >= 5 and bet_amount <= 1000 and bet_amount <= money:
+                break
+            else:
+                print("Invalid bet amount")
         except ValueError:
             print("Invalid input for bet amount try again.")
-    initialize_game(dealer,player,deck)
+    initialize_game(dealer, player, deck, money)
+
+
     display_player_cards(player)
 
     while True:
@@ -156,8 +163,7 @@ def main():
             # resets values for new game
             dealer = []
             player = []
-            deck = deck_initialize()
-            initialize_game(dealer, player, deck)
+            initialize_game(dealer, player, deck,money)
             display_player_cards(player)
 
         choice = input("Hit or stand? (hit/stand): ").lower()
@@ -187,12 +193,25 @@ def main():
             if player_choice != "y":
                 break
             print()
-            #resets values for new game
+
+            money = float(db.read_money())
+            print("Money:", money)
+            while True:
+                try:
+                    bet_amount = float(input("Bet amount: "))
+                    if bet_amount >= 5 and bet_amount <= 1000 and bet_amount <= money:
+                        break
+                    else:
+                        print("Invalid bet amount")
+                except ValueError:
+                    print("Invalid input for bet amount try again.")
+            # resets values for new game
             dealer = []
             player = []
-            deck = deck_initialize()
-            initialize_game(dealer, player, deck)
+            initialize_game(dealer, player, deck, money)
+
             display_player_cards(player)
+
         else:
             print("invalid choice please try again!")
 
