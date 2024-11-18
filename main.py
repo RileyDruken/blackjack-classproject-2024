@@ -1,4 +1,5 @@
 import random
+import db
 
 def deck_initialize():
     # Creates the deck of cards and shuffles them
@@ -53,23 +54,36 @@ def display_dealer_cards(dealer):
         print(f"{i[0]} of {i[1]}")
     print()
 
-def win_check(dealer_score, player_score):
+def win_check(dealer_score, player_score,bet_amount,money):
     # checks if the winner
     print(f"YOUR POINTS:\t {player_score}")
     print(f"DEALER'S POINTS: {dealer_score}")
 
     if player_score == 21:
         print("Congrats, You Win.\n")
+        money += bet_amount * 1.5
+        print("Money: ", money)
     elif player_score > 21:
         print("Player bust, you lose.\n")
+        money -= bet_amount
+        print("Money: ", money)
     elif player_score > dealer_score:
         print("Congrats, You Win.\n")
+        money += bet_amount * 1.5
+        print("Money: ", money)
     elif player_score == dealer_score:
         print("Draw, it is a tie.\n")
+        print("Money: ", money)
     elif dealer_score > 21:
         print("Dealer bust, you win.\n")
+        money += bet_amount * 1.5
+        print("Money: ", money)
     else:
         print("Sorry, you lose.\n")
+        money -= bet_amount
+        print("Money: ", money)
+
+    db.write_money(str(money))
 
 def ace_check(card, player_score, dealer_score, is_dealer=False):
     #checks if the card the player or dealer has is an ace
@@ -109,16 +123,28 @@ def main():
     dealer = []
     player = []
 
+    money = float(db.read_money())
+
+
     print("BlACKJACK!\nBlackjack payout is 3:2\n")
 
     deck = deck_initialize()
+    print(f"Money: {money}")
+    while True:
+        try:
+            bet_amount = float(input("Bet amount: "))
+            break
+        except ValueError:
+            print("Invalid input for bet amount try again.")
     initialize_game(dealer,player,deck)
     display_player_cards(player)
 
     while True:
+
         dealer_score, player_score = calculate_scores(dealer, player)
+
         if player_score > 21:
-            win_check(dealer_score,player_score)
+            win_check(dealer_score,player_score,bet_amount,money)
             while True:
                 player_choice = input("Play again? (y/n): ").lower()
                 if player_choice == "y" or player_choice == "n":
@@ -150,7 +176,7 @@ def main():
             display_dealer_cards(dealer)
 
             #check if winner
-            win_check(dealer_score, player_score)
+            win_check(dealer_score, player_score,bet_amount,money)
 
             #sees if the player wants to end the game
             while True:
@@ -169,6 +195,7 @@ def main():
             display_player_cards(player)
         else:
             print("invalid choice please try again!")
+
 
     print("\nCome back soon!\nBye!")
 
